@@ -1,0 +1,13 @@
+<Project>
+  <!-- 
+    This file applies to all projects automatically, this file contains all the project specific data
+  -->
+
+  <PropertyGroup>
+    <Authors>Simply Effective Solutions</Authors>
+    <PackageIconUrl>https://github.com/WildGums/Assets/raw/master/packages/logo.png</PackageIconUrl>
+    <PackageProjectUrl>https://bitbucket.org/[[BITBUCKET.COMPANY]]/SES.Projects.GFG</PackageProjectUrl>
+    <RepositoryUrl>https://bitbucket.org/[[BITBUCKET.COMPANY]]/GFG</RepositoryUrl>
+  </PropertyGroup>
+   
+</Project>

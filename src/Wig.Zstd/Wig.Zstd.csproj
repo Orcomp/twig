@@ -1,0 +1,47 @@
+﻿<Project Sdk="MSBuild.Sdk.Extras">
+  <PropertyGroup>
+    <TargetFrameworks>net5.0-windows</TargetFrameworks>
+    <AssemblyName>Wig.Zstd</AssemblyName>
+    <RootNamespace>Wig.Zstd</RootNamespace>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <PackageId>Wig.Zstd</PackageId>
+    <PackageVersion>1.0.0-alpha0001</PackageVersion>
+    <Description>Wig.Zstd</Description>
+    <PackageTags>console;compress;zstd;WildGums</PackageTags>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <UseWpf>false</UseWpf>
+    <ExtrasEnableImplicitWpfReferences>false</ExtrasEnableImplicitWpfReferences>
+  </PropertyGroup>
+
+  <PropertyGroup>
+    <!-- SonarQube requires a project guid -->
+    <ProjectGuid>FD86BFB0-057F-4E66-A55C-C070724FD9D7</ProjectGuid>
+    <ApplicationIcon />
+    <OutputType>Exe</OutputType>
+    <StartupObject />
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="..\MethodTimeLogger.cs" />
+  </ItemGroup>
+
+  <!-- Note: all should be private assets (embedded using Costura) except for the app API -->
+  <ItemGroup>
+    <PackageReference Include="Catel.Core" Version="5.12.17" />
+    <PackageReference Include="Costura.Fody" Version="5.1.0" PrivateAssets="all" />
+    <PackageReference Include="Fody" Version="6.5.1" PrivateAssets="all">
+      <IncludeAssets>runtime; build; native; contentfiles; analyzers</IncludeAssets>
+    </PackageReference>
+    <PackageReference Include="ModuleInit.Fody" Version="2.1.1" PrivateAssets="all" />
+    <PackageReference Include="Spectre.Console" Version="0.41.0" />
+    <PackageReference Include="ZstdNet" Version="1.4.5" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Update="NETStandard.Library" Version="2.0.3" />
+  </ItemGroup>
+
+  <Import Project="$(MSBuildProjectDirectory)\..\Directory.build.shared.explicit.props" Condition="Exists('$(MSBuildProjectDirectory)\..\Directory.build.shared.explicit.props')" />
+</Project>
