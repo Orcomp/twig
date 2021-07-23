@@ -162,13 +162,13 @@
         {
             if (settings.IsCompressionMode)
             {
-                await CompressingAsync(settings.Path, settings.CompressionLevel = 5, settings.Overwrite, settings.Subfolder = "");
+                await CompressingAsync(settings.Path, settings.CompressionLevel, settings.Overwrite, settings.Subfolder);
 
             }
 
             if (settings.IsDecompressionMode)
             {
-                await DecompressingAsync(settings.Path, settings.Overwrite, settings.Subfolder = "");
+                await DecompressingAsync(settings.Path, settings.Overwrite, settings.Subfolder);
             }
 
             _console.WriteLine("Task completed.");
