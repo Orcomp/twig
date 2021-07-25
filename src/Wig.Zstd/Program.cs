@@ -65,20 +65,35 @@
             _console = console;
         }
 
-        public async Task WriteFileAsync(byte[] data, string path, string subfolder, string extension)
+        public async Task WriteFileAsync(byte[] data, string path, string subfolder, string extension = "")
         {
-            var fileName = Path.GetFileName(path);
+            var fileName = Path.GetFileName(path) + extension;
             var currentDirectory = Path.GetDirectoryName(path);
-
-            var directory = Directory.CreateDirectory($"{currentDirectory}/{subfolder}");
-
-            await using (FileStream fstream = new FileStream($"{directory}/{fileName}{extension}", FileMode.OpenOrCreate))
+            var directory = Directory.CreateDirectory(Path.Combine(currentDirectory, subfolder)).ToString();
+            if (String.IsNullOrEmpty(subfolder))
+            {
+                directory = currentDirectory;
+            }
+            await using (FileStream fstream = new FileStream(Path.Combine(directory, fileName), FileMode.OpenOrCreate))
             {
                 await fstream.WriteAsync(data, 0, data.Length);
             }
         }
 
-        public async Task CompressingAsync(string path, int compressionLevel, bool overwrite, string subfolder)
+        public async Task WriteCompressedDataAsync(string path, Compressor compressor, bool overwrite, string subfolder)
+        {
+            byte[] data = await File.ReadAllBytesAsync(path);
+            var compressedBytes = compressor.Wrap(data);
+            if (File.Exists($"{path}.zs") && !overwrite)
+            {
+                AnsiConsole.WriteLine("A compressed file with the same name already exists. Use the -o | --overwrite parameter to force overwrite.");
+                return;
+            }
+
+            await WriteFileAsync(compressedBytes, path, subfolder, ".zs");
+        }
+
+        public async Task CompressAsync(string path, int compressionLevel, bool overwrite, string subfolder)
         {
             using var options = new CompressionOptions(compressionLevel);
             using var compressor = new Compressor(options);
@@ -89,34 +104,32 @@
 
                 foreach (var filePath in filePaths)
                 {
-                    byte[] data = await File.ReadAllBytesAsync(filePath);
-
-                    var compData = compressor.Wrap(data);
-
-                    if (File.Exists($"{filePath}.zs") && !overwrite)
-                    {
-                        AnsiConsole.WriteLine("A compressed file with the same name already exists. Use the -o | --overwrite parameter to force overwrite.");
-                        return;
-                    }
-
-                    await WriteFileAsync(compData, path, subfolder, "zs");
+                    await WriteCompressedDataAsync(filePath, compressor, overwrite, subfolder);
                 }
             }
 
-            byte[] sourceData = await File.ReadAllBytesAsync(path);
-
-            var compressedData = compressor.Wrap(sourceData);
-
-            if (File.Exists($"{path}.zs") && !overwrite)
-            {
-                AnsiConsole.WriteLine("A compressed file with the same name already exists. Use the -o | --overwrite parameter to force overwrite.");
-                return;
-            }
-
-            await WriteFileAsync(compressedData, path, subfolder, ".zs");
+            await WriteCompressedDataAsync(path, compressor, overwrite, subfolder);
         }
 
-        public async Task DecompressingAsync(string path, bool overwrite, string subfolder)
+        public async Task WriteDecompressedDataAsync(string path, Decompressor decompressor, bool overwrite, string subfolder)
+        {
+             if (path.Contains(".zs"))
+             {
+                byte[] compressedData = await File.ReadAllBytesAsync($"{path}");
+                var decompressedBytes = decompressor.Unwrap(compressedData);
+                var unpackingPath = Path.ChangeExtension(path, "");
+
+                if (File.Exists($"{path}") && !overwrite)
+                {
+                    AnsiConsole.WriteLine("A decompressed file with the same name already exists. Use the -o | --overwrite parameter to force overwrite.");
+                    return;
+                }
+
+                await WriteFileAsync(decompressedBytes, unpackingPath, subfolder);
+             }
+        }
+
+        public async Task DecompressAsync(string path, bool overwrite, string subfolder)
         {
             using var decompressor = new Decompressor();
 
@@ -126,49 +139,36 @@
                 string[] filePaths = Directory.GetFiles(path);
                 foreach (var filePath in filePaths)
                 {
-                    if (filePath.Contains(".zs"))
-                    {
-                        byte[] compressedData = await File.ReadAllBytesAsync($"{filePath}");
-                        var decompressedData = decompressor.Unwrap(compressedData);
-                        var unpackingPath = Path.ChangeExtension(filePath, "");
-
-                        if (File.Exists($"{path}") && !overwrite)
-                        {
-                            AnsiConsole.WriteLine("A decompressed file with the same name already exists. Use the -o | --overwrite parameter to force overwrite.");
-                            return;
-                        }
-
-                        await WriteFileAsync(decompressedData, unpackingPath, subfolder, "");
-                    }
+                    await WriteDecompressedDataAsync(filePath, decompressor, overwrite, subfolder);
                 }
             }
-            if (path.Contains(".zs"))
-            {
-                byte[] compressedData = await File.ReadAllBytesAsync($"{path}");
-                var decompressedData = decompressor.Unwrap(compressedData);
-                var unpackingPath = Path.ChangeExtension(path, "");
 
-                if (File.Exists($"{path}") && !overwrite)
-                {
-                    AnsiConsole.WriteLine("A decompressed file with the same name already exists. Use the -o | --overwrite parameter to force overwrite.");
-                    return;
-                }
-
-                await WriteFileAsync(decompressedData, unpackingPath, subfolder, "");
-            }
+            await WriteDecompressedDataAsync(path, decompressor, overwrite, subfolder);
         }
 
         public override async Task<int> ExecuteAsync(CommandContext context, Settings settings)
         {
+            if (string.IsNullOrEmpty(settings.Path) || settings.Path.IndexOfAny(System.IO.Path.GetInvalidPathChars()) >= 0)
+            {
+                _console.WriteLine("Path is empty or contains invalid characters.");
+                return 0;
+            }
+
+                if (settings.IsCompressionMode && settings.IsDecompressionMode)
+            {
+                _console.WriteLine("Only one operation (compress or decompress) can be selected at the same time.");
+                return 0;
+            }
+
             if (settings.IsCompressionMode)
             {
-                await CompressingAsync(settings.Path, settings.CompressionLevel, settings.Overwrite, settings.Subfolder);
+                await CompressAsync(settings.Path, settings.CompressionLevel, settings.Overwrite, settings.Subfolder);
 
             }
 
             if (settings.IsDecompressionMode)
             {
-                await DecompressingAsync(settings.Path, settings.Overwrite, settings.Subfolder);
+                await DecompressAsync(settings.Path, settings.Overwrite, settings.Subfolder);
             }
 
             _console.WriteLine("Task completed.");
