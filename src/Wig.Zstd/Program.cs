@@ -35,7 +35,7 @@
 
         public sealed class Settings : CommandSettings
         {
-            [CommandArgument(0, "[path]")]
+            [CommandArgument(0, "path")]
             [Description("Path to the files")]
             public string Path { get; set; }
 
@@ -57,7 +57,22 @@
 
             [CommandOption("-s|--subfolder")]
             [Description("Subfolder name")]
-            public string Subfolder{ get; set; }
+            public string Subfolder { get; set; }
+
+            public override ValidationResult Validate()
+            {
+                if (IsCompressionMode && IsDecompressionMode)
+                {
+                    return ValidationResult.Error("Only one operation (compress or decompress) can be selected at the same time.");
+                }
+
+                if (!IsCompressionMode && !IsDecompressionMode)
+                {
+                    return ValidationResult.Error("At leat one operation should be specified");
+                }
+
+                return base.Validate();
+            }
         }
 
         public DefaultCommand(IAnsiConsole console)
@@ -69,11 +84,12 @@
         {
             var fileName = Path.GetFileName(path) + extension;
             var currentDirectory = Path.GetDirectoryName(path);
-            var directory = Directory.CreateDirectory(Path.Combine(currentDirectory, subfolder)).ToString();
-            if (String.IsNullOrEmpty(subfolder))
+            var directory = currentDirectory;
+            if (!string.IsNullOrEmpty(subfolder))
             {
-                directory = currentDirectory;
+                directory = Directory.CreateDirectory(Path.Combine(currentDirectory, subfolder)).ToString();
             }
+
             await using (FileStream fstream = new FileStream(Path.Combine(directory, fileName), FileMode.OpenOrCreate))
             {
                 await fstream.WriteAsync(data, 0, data.Length);
@@ -113,20 +129,23 @@
 
         public async Task WriteDecompressedDataAsync(string path, Decompressor decompressor, bool overwrite, string subfolder)
         {
-             if (path.Contains(".zs"))
-             {
-                byte[] compressedData = await File.ReadAllBytesAsync($"{path}");
-                var decompressedBytes = decompressor.Unwrap(compressedData);
-                var unpackingPath = Path.ChangeExtension(path, "");
+            if (!path.EndsWith(".zs"))
+            {
+                AnsiConsole.WriteLine("Only files with extension '.ZS' can be decompressed");
+                return;
+            }
 
-                if (File.Exists($"{path}") && !overwrite)
-                {
-                    AnsiConsole.WriteLine("A decompressed file with the same name already exists. Use the -o | --overwrite parameter to force overwrite.");
-                    return;
-                }
+            byte[] compressedData = await File.ReadAllBytesAsync($"{path}");
+            var decompressedBytes = decompressor.Unwrap(compressedData);
+            var unpackingPath = Path.ChangeExtension(path, "");
 
-                await WriteFileAsync(decompressedBytes, unpackingPath, subfolder);
-             }
+            if (File.Exists($"{path}") && !overwrite)
+            {
+                AnsiConsole.WriteLine("A decompressed file with the same name already exists. Use the -o | --overwrite parameter to force overwrite.");
+                return;
+            }
+
+            await WriteFileAsync(decompressedBytes, unpackingPath, subfolder);
         }
 
         public async Task DecompressAsync(string path, bool overwrite, string subfolder)
@@ -154,16 +173,9 @@
                 return 0;
             }
 
-                if (settings.IsCompressionMode && settings.IsDecompressionMode)
-            {
-                _console.WriteLine("Only one operation (compress or decompress) can be selected at the same time.");
-                return 0;
-            }
-
             if (settings.IsCompressionMode)
             {
                 await CompressAsync(settings.Path, settings.CompressionLevel, settings.Overwrite, settings.Subfolder);
-
             }
 
             if (settings.IsDecompressionMode)
