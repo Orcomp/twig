@@ -10,9 +10,9 @@ using System.Runtime.InteropServices;
 
 // All other assembly info is defined in SharedAssembly.cs
 
-[assembly: AssemblyTitle("Wig.Zstd.Tests")]
-[assembly: AssemblyProduct("Wig.Zstd.Tests")]
-[assembly: AssemblyDescription("Wig.Zstd.Tests")]
+[assembly: AssemblyTitle("wig.Tests")]
+[assembly: AssemblyProduct("wig.Tests")]
+[assembly: AssemblyDescription("wig.Tests")]
 
 // Setting ComVisible to false makes the types in this assembly not visible
 // to COM components.  If you need to access a type in this assembly from

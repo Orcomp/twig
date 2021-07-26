@@ -4,11 +4,11 @@
 
 // Define the required parameters
 var Parameters = new Dictionary<string, object>();
-Parameters["SolutionName"] = "SES.Projects.GFG";
-Parameters["Company"] = "Simply Effective Solutions";
-Parameters["RepositoryUrl"] = string.Format("https://github.com/{0}/{1}", "SimplyEffectiveSolutions", GetBuildServerVariable("SolutionName"));
+Parameters["SolutionName"] = "CsvTextEditor";
+Parameters["Company"] = "WildGums";
+Parameters["RepositoryUrl"] = string.Format("https://github.com/{0}/{1}", GetBuildServerVariable("Company"), GetBuildServerVariable("SolutionName"));
 Parameters["StartYear"] = "2014";
-Parameters["UseVisualStudioPrerelease"] = "false";
+Parameters["UseVisualStudioPrerelease"] = "true";
 
 // Note: the rest of the variables should be coming from the build server,
 // see `/deployment/cake/*-variables.cake` for customization options
@@ -24,12 +24,9 @@ Parameters["UseVisualStudioPrerelease"] = "false";
 // DEFINE COMPONENTS TO BUILD / PACKAGE
 //=======================================================
 
-Components.Add("SES.Projects.GFG.Chameleon.PlanX");
-Components.Add("SES.Projects.GFG.Chameleon.NetworX");
-Components.Add("SES.Projects.GFG.Chameleon.PFX");
-Components.Add("SES.Projects.GFG.Chameleon.ProjX");
+WpfApps.Add(string.Format("{0}", GetBuildServerVariable("SolutionName")));
 
-TestProjects.Add("SES.Projects.GFG.Tests");
+TestProjects.Add(string.Format("{0}.Tests", GetBuildServerVariable("SolutionName")));
 
 //=======================================================
 // REQUIRED INITIALIZATION, DO NOT CHANGE

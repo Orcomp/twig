@@ -1,4 +1,4 @@
-﻿namespace Wig.Zstd
+﻿namespace wig
 {
     using System;
     using System.Collections.Generic;

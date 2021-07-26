@@ -5,9 +5,8 @@
 
   <PropertyGroup>
     <Authors>Simply Effective Solutions</Authors>
-    <PackageIconUrl>https://github.com/WildGums/Assets/raw/master/packages/logo.png</PackageIconUrl>
-    <PackageProjectUrl>https://bitbucket.org/[[BITBUCKET.COMPANY]]/SES.Projects.GFG</PackageProjectUrl>
-    <RepositoryUrl>https://bitbucket.org/[[BITBUCKET.COMPANY]]/GFG</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/Orcomp/wig</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Orcomp/wig</RepositoryUrl>
   </PropertyGroup>
    
 </Project>

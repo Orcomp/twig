@@ -1,10 +1,10 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
     <TargetFrameworks>net5.0-windows</TargetFrameworks>
-    <AssemblyName>Wig.Zstd.Tests</AssemblyName>
-    <RootNamespace>Wig.Zstd.Tests</RootNamespace>
+    <AssemblyName>wig.Tests</AssemblyName>
+    <RootNamespace>wig.Tests</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
-    <PackageId>Wig.Zstd.Tests</PackageId>
+    <PackageId>wig.Tests</PackageId>
     <PackageVersion>1.0.0-alpha0001</PackageVersion>
     <Description></Description>
     <PackageTags></PackageTags>
@@ -38,7 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Wig.Zstd\Wig.Zstd.csproj" />
+    <ProjectReference Include="..\Wig.Zstd\wig.csproj" />
   </ItemGroup>
 
   <ItemGroup>

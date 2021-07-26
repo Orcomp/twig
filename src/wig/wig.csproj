@@ -1,12 +1,12 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
     <TargetFrameworks>net5.0-windows</TargetFrameworks>
-    <AssemblyName>Wig.Zstd</AssemblyName>
-    <RootNamespace>Wig.Zstd</RootNamespace>
+    <AssemblyName>wig</AssemblyName>
+    <RootNamespace>wig</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
-    <PackageId>Wig.Zstd</PackageId>
+    <PackageId>wig</PackageId>
     <PackageVersion>1.0.0-alpha0001</PackageVersion>
-    <Description>Wig.Zstd</Description>
+    <Description>wig</Description>
     <PackageTags>console;compress;zstd;WildGums</PackageTags>
   </PropertyGroup>
 

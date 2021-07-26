@@ -5,7 +5,7 @@
 // --------------------------------------------------------------------------------------------------------------------
 
 
-namespace Wig.Zstd.Tests
+namespace wig.Tests
 {
     using System;
     using Catel.IO;
