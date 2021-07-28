@@ -1,0 +1,12 @@
+<Project>
+  <!-- 
+    This file applies to all projects automatically, this file contains all the project specific data
+  -->
+
+  <PropertyGroup>
+    <Authors>Simply Effective Solutions</Authors>
+    <PackageProjectUrl>https://github.com/Orcomp/wig</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Orcomp/wig</RepositoryUrl>
+  </PropertyGroup>
+   
+</Project>
