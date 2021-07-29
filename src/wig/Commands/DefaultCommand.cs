@@ -46,6 +46,10 @@
             [Description("Remove the original file after successfully compressing")]
             public bool Remove { get; set; }
 
+            [CommandOption("-v|--verbose")]
+            [Description("Print information after compressing each file")]
+            public bool Verbose { get; set; }
+
             public override ValidationResult Validate()
             {
                 if (IsCompressionMode && IsDecompressionMode)
@@ -103,6 +107,7 @@
                             settings.CompressionLevel,
                             settings.Overwrite,
                             settings.Subfolder,
+                            settings.Verbose,
                             settings.DestinationFolder,
                             settings.Remove,
                             task
