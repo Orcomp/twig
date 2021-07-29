@@ -123,6 +123,7 @@
                             settings.Overwrite,
                             settings.Subfolder,
                             settings.DestinationFolder,
+                            settings.Remove,
                             task
                         )
                     );

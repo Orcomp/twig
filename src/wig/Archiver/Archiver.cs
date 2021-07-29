@@ -68,7 +68,7 @@
             }
         }
 
-        public static async Task DecompressAsync(string path, bool overwrite, bool subfolder, string destination, ProgressTask task)
+        public static async Task DecompressAsync(string path, bool overwrite, bool subfolder, string destination, bool remove, ProgressTask task)
         {
             using var decompressor = new Decompressor();
 
@@ -80,8 +80,9 @@
                 task.MaxValue = size;
                 foreach (var filePath in filePaths.Where(filePaths => filePaths.EndsWith(".zs")))
                 {
-                    await WriteDecompressedDataAsync(filePath, decompressor, overwrite, false, destination);
+                    await WriteDecompressedDataAsync(filePath, decompressor, overwrite, destination);
                     task.Value += new FileInfo(filePath).Length;
+                    RemoveOriginal(filePath, remove);
                 }
                 if (subfolder)
                 {
@@ -91,8 +92,9 @@
                         var files = Directory.GetFiles(folder.ToString());
                         foreach (var file in files.Where(files => files.EndsWith(".zs")))
                         {
-                            await WriteDecompressedDataAsync(file, decompressor, overwrite, false, destination);
+                            await WriteDecompressedDataAsync(file, decompressor, overwrite, destination);
                             task.Value += new FileInfo(file).Length;
+                            RemoveOriginal(file, remove);
                         }
                     }
                 }
@@ -101,10 +103,11 @@
             }
 
             task.MaxValue = 1;
-            await WriteDecompressedDataAsync(path, decompressor, overwrite, false, destination);
+            await WriteDecompressedDataAsync(path, decompressor, overwrite, destination);
             task.Value += 1;
+            RemoveOriginal(path, remove);
         }
-        private static async Task WriteDecompressedDataAsync(string path, Decompressor decompressor, bool overwrite, bool remove, string destination)
+        private static async Task WriteDecompressedDataAsync(string path, Decompressor decompressor, bool overwrite, string destination)
         {
             byte[] compressedData = await File.ReadAllBytesAsync($"{path}");
             var decompressedBytes = decompressor.Unwrap(compressedData);
@@ -120,7 +123,7 @@
 
         public static void RemoveOriginal(string path, bool remove)
         {
-            if (remove && !path.EndsWith(".zs"))
+            if (remove)
             {
                 File.Delete(path);
             }
