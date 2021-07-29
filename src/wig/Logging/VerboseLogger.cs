@@ -14,7 +14,7 @@
             var compressedSize = new FileInfo(resultPath).Length; 
             var ratio = originalSize / compressedSize;
 
-            AnsiConsole.WriteLine($"Compressed {fileName} in {elapsedTime} ms. Original: {originalSize.ToFileSize()}. Compressed {compressedSize.ToFileSize()}. Ratio: {ratio}");
+            AnsiConsole.WriteLine($"Compressed {fileName} in {elapsedTime} ms. Original: {originalSize.ToFileSize()}. Compressed: {compressedSize.ToFileSize()}. Ratio: {ratio}");
         }
     }
 }
