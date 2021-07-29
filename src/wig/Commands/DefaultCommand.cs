@@ -3,6 +3,7 @@
     using System;
     using System.ComponentModel;
     using System.IO;
+    using System.Linq;
     using System.Threading.Tasks;
     using Spectre.Console;
     using Spectre.Console.Cli;
@@ -80,6 +81,16 @@
                 if (CompressionLevel > 22 || CompressionLevel < 1)
                 {
                     return ValidationResult.Error("Invalid compression level (must be between 1 and 22).");
+                }
+
+                if (IsDecompressionMode && Directory.GetFiles(Path, "*.zs", SearchOption.AllDirectories).Length == 0)
+                {
+                    return ValidationResult.Error($"Nothing to decompress in {Path}");
+                }
+
+                if (IsCompressionMode && Directory.GetFiles(Path, "*.*", SearchOption.AllDirectories).Count(name => !name.EndsWith(".zs")) == 0)
+                {
+                    return ValidationResult.Error($"Nothing to compress in {Path}");
                 }
 
                 return base.Validate();
