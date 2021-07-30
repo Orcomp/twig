@@ -39,9 +39,9 @@
             [Description("Recursively look into subfolders")]
             public bool Subfolder { get; set; }
 
-            [CommandOption("-f|--folder")]
-            [Description("Write to specified destination folder")]
-            public string DestinationFolder { get; set; }
+            [CommandOption("-o|--output")]
+            [Description("Write to specified path")]
+            public string OutputPath { get; set; }
 
             [CommandOption("--remove")]
             [Description("Remove the original file after successfully compressing")]
@@ -58,7 +58,7 @@
                     return ValidationResult.Error("Only one operation (compress or decompress) can be selected at the same time.");
                 }
 
-                if (!String.IsNullOrEmpty(DestinationFolder) && DestinationFolder.IndexOfAny(System.IO.Path.GetInvalidPathChars()) >= 0)
+                if (!String.IsNullOrEmpty(OutputPath) && OutputPath.IndexOfAny(System.IO.Path.GetInvalidPathChars()) >= 0)
                 {
                     return ValidationResult.Error("Destination folder contains invalid characters");
                 }
@@ -114,7 +114,7 @@
                             settings.Overwrite,
                             settings.Subfolder,
                             settings.Verbose,
-                            settings.DestinationFolder,
+                            settings.OutputPath,
                             settings.Remove,
                             task
                         )
@@ -128,7 +128,7 @@
                             settings.Path,
                             settings.Overwrite,
                             settings.Subfolder,
-                            settings.DestinationFolder,
+                            settings.OutputPath,
                             settings.Remove,
                             task
                         )
@@ -144,7 +144,7 @@
                             settings.Overwrite,
                             settings.Subfolder,
                             settings.Verbose,
-                            settings.DestinationFolder,
+                            settings.OutputPath,
                             settings.Remove,
                             task
                         )

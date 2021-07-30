@@ -44,28 +44,20 @@
             return total;
         }
 
-        public static async Task<string> WriteFileAsync(byte[] data, string path, string destination = "", string extension = "")
+        public static async Task<string> WriteFileAsync(byte[] data, string path, string output = "", string extension = "")
         {
             var fileName = Path.GetFileName(path) + extension;
             var currentDirectory = Path.GetDirectoryName(path);
             var directory = currentDirectory;
-            if (!String.IsNullOrEmpty(destination))
+            if (!String.IsNullOrEmpty(output))
             {
-                var folder = Path.Combine(currentDirectory, destination);
-                if (!Directory.Exists(folder))
-                {
-                    directory = Directory.CreateDirectory(folder).ToString();
-                }
-                else
-                {
-                    directory = folder;
-                }
+                var outputPath = Directory.CreateDirectory(output).ToString();
+                directory = outputPath;
             }
 
             var writePath = Path.Combine(directory, fileName);
-            var fileMode = File.Exists(writePath) ? FileMode.Truncate : FileMode.OpenOrCreate;
 
-            await using (FileStream fstream = new FileStream(writePath, fileMode))
+            await using (FileStream fstream = new FileStream(writePath, FileMode.Create))
             {
                 await fstream.WriteAsync(data, 0, data.Length);
             }
