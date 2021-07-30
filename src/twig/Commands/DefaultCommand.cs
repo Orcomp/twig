@@ -1,4 +1,4 @@
-﻿namespace wig
+﻿namespace twig
 {
     using System;
     using System.ComponentModel;
@@ -83,15 +83,15 @@
                     return ValidationResult.Error("Invalid compression level (must be between 1 and 22).");
                 }
 
-                if (IsDecompressionMode && Directory.GetFiles(Path, "*.zs", SearchOption.AllDirectories).Length == 0)
-                {
-                    return ValidationResult.Error($"Nothing to decompress in {Path}");
-                }
+                //if (IsDecompressionMode && Directory.GetFiles(Path, "*.zs", SearchOption.AllDirectories).Length == 0)
+                //{
+                //    return ValidationResult.Error($"Nothing to decompress in {Path}");
+                //}
 
-                if (IsCompressionMode && Directory.GetFiles(Path, "*.*", SearchOption.AllDirectories).Count(name => !name.EndsWith(".zs")) == 0)
-                {
-                    return ValidationResult.Error($"Nothing to compress in {Path}");
-                }
+                //if (IsCompressionMode && Directory.GetFiles(Path, "*.*", SearchOption.AllDirectories).Count(name => !name.EndsWith(".zs")) == 0)
+                //{
+                //    return ValidationResult.Error($"Nothing to compress in {Path}");
+                //}
 
                 return base.Validate();
             }

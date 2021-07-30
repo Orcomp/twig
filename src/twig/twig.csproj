@@ -1,12 +1,12 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>net5.0-windows</TargetFrameworks>
-    <AssemblyName>wig</AssemblyName>
-    <RootNamespace>wig</RootNamespace>
+    <TargetFramework>net5.0</TargetFramework>
+    <AssemblyName>twig</AssemblyName>
+    <RootNamespace>twig</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
-    <PackageId>wig</PackageId>
+    <PackageId>twig</PackageId>
     <PackageVersion>1.0.0-alpha0001</PackageVersion>
-    <Description>wig</Description>
+    <Description>twig</Description>
     <PackageTags>console;compress;zstd;WildGums</PackageTags>
   </PropertyGroup>
 
