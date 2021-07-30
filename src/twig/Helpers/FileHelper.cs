@@ -1,4 +1,4 @@
-﻿namespace wig
+﻿namespace twig
 {
     using System;
     using System.Collections.Generic;
@@ -54,10 +54,10 @@
                     directory = folder;
                 }
             }
-            
+
             var writePath = Path.Combine(directory, fileName);
             var fileMode = File.Exists(writePath) ? FileMode.Truncate : FileMode.OpenOrCreate;
-           
+
             await using (FileStream fstream = new FileStream(writePath, fileMode))
             {
                 await fstream.WriteAsync(data, 0, data.Length);

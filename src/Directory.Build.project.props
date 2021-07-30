@@ -5,8 +5,8 @@
 
   <PropertyGroup>
     <Authors>Simply Effective Solutions</Authors>
-    <PackageProjectUrl>https://github.com/Orcomp/wig</PackageProjectUrl>
-    <RepositoryUrl>https://github.com/Orcomp/wig</RepositoryUrl>
+    <PackageProjectUrl>https://github.com/Orcomp/twig</PackageProjectUrl>
+    <RepositoryUrl>https://github.com/Orcomp/twig</RepositoryUrl>
   </PropertyGroup>
    
 </Project>

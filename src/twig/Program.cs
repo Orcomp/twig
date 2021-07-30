@@ -1,4 +1,4 @@
-﻿namespace wig
+﻿namespace twig
 {
     using System.Threading.Tasks;
     using Spectre.Console.Cli;
@@ -10,7 +10,7 @@
             var app = new CommandApp<DefaultCommand>();
             app.Configure(config =>
             {
-                config.SetApplicationName("wig");
+                config.SetApplicationName("twig");
             });
 
             return await app.RunAsync(args);
