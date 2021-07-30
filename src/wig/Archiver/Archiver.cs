@@ -8,7 +8,7 @@
 
     public static class Archiver
     {
-        public static async Task CompressAsync(string path, int compressionLevel, bool overwrite, bool subfolder, bool verbose, string destination, bool remove, ProgressTask task)
+        public static async Task CompressAsync(string path, int compressionLevel, bool overwrite, bool subfolder, bool verbose, string destination, bool remove, ProgressTask task, long size = 0)
         {
             using var options = new CompressionOptions(compressionLevel);
             using var compressor = new Compressor(options);
@@ -16,9 +16,12 @@
 
             if (attr.HasFlag(FileAttributes.Directory))
             {
-                var size = FileHelper.GetDirectorySize(path, subfolder);
+                if (size == 0)
+                {
+                    size = FileHelper.GetDirectorySize(path, subfolder);
+                }
                 task.MaxValue = size;
-                string[] filePaths = Directory.GetFiles(path);
+                var filePaths = Directory.GetFiles(path);
 
                 foreach (var filePath in filePaths.Where(filePaths => !filePaths.EndsWith(".zs")))
                 {
@@ -44,9 +47,9 @@
                 return;
             }
 
-            task.MaxValue = 1;
+            task.MaxValue = new FileInfo(path).Length;
             await WriteCompressedDataAsync(path, compressor, overwrite, verbose, destination);
-            task.Value += 1;
+            task.Value += new FileInfo(path).Length;
             RemoveOriginal(path, remove);
         }
 
@@ -68,15 +71,17 @@
             }
         }
 
-        public static async Task DecompressAsync(string path, bool overwrite, bool subfolder, string destination, bool remove, ProgressTask task)
+        public static async Task DecompressAsync(string path, bool overwrite, bool subfolder, string destination, bool remove, ProgressTask task, long size = 0)
         {
             using var decompressor = new Decompressor();
-
             FileAttributes attr = File.GetAttributes(path);
             if (attr.HasFlag(FileAttributes.Directory))
             {
                 string[] filePaths = Directory.GetFiles(path);
-                var size = FileHelper.GetDirectorySize(path, subfolder, ".zs");
+                if (size == 0)
+                {
+                  size = FileHelper.GetDirectorySize(path, subfolder, ".zs");
+                }
                 task.MaxValue = size;
                 foreach (var filePath in filePaths.Where(filePaths => filePaths.EndsWith(".zs")))
                 {
@@ -102,9 +107,9 @@
                 return;
             }
 
-            task.MaxValue = 1;
+            task.MaxValue = new FileInfo(path).Length;
             await WriteDecompressedDataAsync(path, decompressor, overwrite, destination);
-            task.Value += 1;
+            task.Value += new FileInfo(path).Length;
             RemoveOriginal(path, remove);
         }
         private static async Task WriteDecompressedDataAsync(string path, Decompressor decompressor, bool overwrite, string destination)
@@ -128,5 +133,43 @@
                 File.Delete(path);
             }
         }
+
+        public static async Task RunArchiver(string path, int compressionLevel, bool overwrite, bool subfolder, bool verbose, string destination, bool remove, ProgressTask task)
+        {
+            if (!File.GetAttributes(path).HasFlag(FileAttributes.Directory) && path.EndsWith(".zs"))
+            {
+                await DecompressAsync(path, overwrite, subfolder, destination, remove, task);
+                return;
+            }
+            if (!File.GetAttributes(path).HasFlag(FileAttributes.Directory) && !path.EndsWith(".zs"))
+            {
+                await CompressAsync(path, compressionLevel, overwrite, subfolder, verbose, destination, remove, task);
+                return;
+            }
+
+            var size = FileHelper.GetTotalSize(path, subfolder);
+            
+            if (File.GetAttributes(path).HasFlag(FileAttributes.Directory))
+            {
+                var paths = Directory.GetFiles(path);
+                if (subfolder)
+                {
+                    paths = Directory.GetFiles(path, "*.*", SearchOption.AllDirectories);
+                }
+                foreach (var p in paths)
+                {
+                    if (p.EndsWith(".zs"))
+                    {
+                        await DecompressAsync(p, overwrite, subfolder, destination, remove, task, size);
+                    }
+
+                    if (!p.EndsWith(".zs"))
+                    {
+                        await CompressAsync(p, compressionLevel, overwrite, subfolder, verbose, destination, remove, task, size);
+                    }
+                }
+            }
+        }
+
     }
 }

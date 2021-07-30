@@ -36,6 +36,13 @@
 
             return total;
         }
+        public static long GetTotalSize(string path, bool subfolder)
+        {
+            var compressedSize = GetDirectorySize(path, subfolder, ".zs");
+            var uncompressedSize =GetDirectorySize(path, subfolder);
+            var total = compressedSize + uncompressedSize;
+            return total;
+        }
 
         public static async Task<string> WriteFileAsync(byte[] data, string path, string destination = "", string extension = "")
         {
