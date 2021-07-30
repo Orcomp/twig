@@ -1,4 +1,4 @@
-﻿namespace wig
+﻿namespace twig
 {
     using System.Diagnostics;
     using System.IO;
