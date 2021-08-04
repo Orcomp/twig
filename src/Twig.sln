@@ -22,9 +22,9 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Core", "Core", "{9230480D-2
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Tests", "Tests", "{CCD66FB3-48A3-42CF-9F3E-B625D7DA2D06}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "wig.Tests", "wig.Tests\wig.Tests.csproj", "{B78A1753-6C86-46C1-897A-E36C067CD08C}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "twig.Tests", "twig.Tests\twig.Tests.csproj", "{B78A1753-6C86-46C1-897A-E36C067CD08C}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "wig", "wig\wig.csproj", "{FD86BFB0-057F-4E66-A55C-C070724FD9D7}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "twig", "twig\twig.csproj", "{FD86BFB0-057F-4E66-A55C-C070724FD9D7}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

@@ -1,10 +1,10 @@
 ﻿<Project Sdk="MSBuild.Sdk.Extras">
   <PropertyGroup>
-    <TargetFrameworks>net5.0-windows</TargetFrameworks>
-    <AssemblyName>wig.Tests</AssemblyName>
-    <RootNamespace>wig.Tests</RootNamespace>
+    <TargetFramework>net5.0</TargetFramework>
+    <AssemblyName>twig.Tests</AssemblyName>
+    <RootNamespace>twig.Tests</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
-    <PackageId>wig.Tests</PackageId>
+    <PackageId>twig.Tests</PackageId>
     <PackageVersion>1.0.0-alpha0001</PackageVersion>
     <Description></Description>
     <PackageTags></PackageTags>
@@ -38,7 +38,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Wig.Zstd\wig.csproj" />
+    <ProjectReference Include="..\twig\twig.csproj" />
   </ItemGroup>
 
   <ItemGroup>
