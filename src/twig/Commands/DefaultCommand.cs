@@ -26,8 +26,8 @@
             [Description("Decompress files")]
             public bool IsDecompressionMode { get; set; }
 
-            [CommandOption("-o|--overwrite")]
-            [Description("Overwrite file / directory")]
+            [CommandOption("-f|--force")]
+            [Description("Force overwrite file or directory")]
             public bool Overwrite { get; set; }
 
             [CommandOption("-l|--level")]
@@ -35,15 +35,15 @@
             [Description("Compression level (1-22)")]
             public int CompressionLevel { get; set; }
 
-            [CommandOption("-s|--subfolder")]
-            [Description("Look into subfolder")]
+            [CommandOption("-r|--recursive")]
+            [Description("Recursively look into subfolders")]
             public bool Subfolder { get; set; }
 
-            [CommandOption("-f|--folder")]
-            [Description("Write to specified destination folder")]
-            public string DestinationFolder { get; set; }
+            [CommandOption("-o|--output")]
+            [Description("Write to specified path")]
+            public string OutputPath { get; set; }
 
-            [CommandOption("-r|--remove")]
+            [CommandOption("--remove")]
             [Description("Remove the original file after successfully compressing")]
             public bool Remove { get; set; }
 
@@ -58,12 +58,7 @@
                     return ValidationResult.Error("Only one operation (compress or decompress) can be selected at the same time.");
                 }
 
-                if (!IsCompressionMode && !IsDecompressionMode)
-                {
-                    return ValidationResult.Error("At least one operation should be specified");
-                }
-
-                if (!String.IsNullOrEmpty(DestinationFolder) && DestinationFolder.IndexOfAny(System.IO.Path.GetInvalidPathChars()) >= 0)
+                if (!String.IsNullOrEmpty(OutputPath) && OutputPath.IndexOfAny(System.IO.Path.GetInvalidPathChars()) >= 0)
                 {
                     return ValidationResult.Error("Destination folder contains invalid characters");
                 }
@@ -119,7 +114,7 @@
                             settings.Overwrite,
                             settings.Subfolder,
                             settings.Verbose,
-                            settings.DestinationFolder,
+                            settings.OutputPath,
                             settings.Remove,
                             task
                         )
@@ -133,7 +128,23 @@
                             settings.Path,
                             settings.Overwrite,
                             settings.Subfolder,
-                            settings.DestinationFolder,
+                            settings.OutputPath,
+                            settings.Remove,
+                            task
+                        )
+                    );
+            }
+
+            if (!settings.IsCompressionMode && !settings.IsDecompressionMode)
+            {
+                await AnsiConsole.Progress()
+                    .StartExecuteAsync("Processing...", async (task) => await Archiver.RunArchiver(
+                            settings.Path,
+                            settings.CompressionLevel,
+                            settings.Overwrite,
+                            settings.Subfolder,
+                            settings.Verbose,
+                            settings.OutputPath,
                             settings.Remove,
                             task
                         )
