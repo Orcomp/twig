@@ -11,7 +11,10 @@
             await consoleProgress.StartAsync(async ctx =>
             {
                 var task = ctx.AddTask($"[green] {description} [/]");
-                await func(task);
+                using (Archiver.ReportProgress(task))
+                {
+                    await func(task);
+                }
             });
         }
     }

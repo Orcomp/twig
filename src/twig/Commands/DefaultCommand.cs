@@ -51,6 +51,10 @@
             [Description("Print information after compressing each file")]
             public bool Verbose { get; set; }
 
+            [CommandOption("--advise")]
+            [Description("Find the best compression level given a file and duration")]
+            public int Duration { get; set; }
+
             public override ValidationResult Validate()
             {
                 if (IsCompressionMode && IsDecompressionMode)
@@ -76,6 +80,17 @@
                 if (CompressionLevel > 22 || CompressionLevel < 1)
                 {
                     return ValidationResult.Error("Invalid compression level (must be between 1 and 22).");
+                }
+
+                if (Duration > 0 && Path.EndsWith(".zs"))
+                {
+                    return ValidationResult.Error("Advise mode requires an uncompressed file.");
+                }
+
+                if (Duration > 0 && IsCompressionMode)
+                {
+
+                    return ValidationResult.Error("Cannot process advise and compress commands at the same time.");
                 }
 
                 //if (IsDecompressionMode && Directory.GetFiles(Path, "*.zs", SearchOption.AllDirectories).Length == 0)
@@ -115,8 +130,7 @@
                             settings.Subfolder,
                             settings.Verbose,
                             settings.OutputPath,
-                            settings.Remove,
-                            task
+                            settings.Remove
                         )
                     );
             }
@@ -129,13 +143,12 @@
                             settings.Overwrite,
                             settings.Subfolder,
                             settings.OutputPath,
-                            settings.Remove,
-                            task
+                            settings.Remove
                         )
                     );
             }
 
-            if (!settings.IsCompressionMode && !settings.IsDecompressionMode)
+            if (!settings.IsCompressionMode && !settings.IsDecompressionMode && settings.Duration == 0)
             {
                 await AnsiConsole.Progress()
                     .StartExecuteAsync("Processing...", async (task) => await Archiver.RunArchiver(
@@ -149,6 +162,15 @@
                             task
                         )
                     );
+            }
+
+            if (settings.Duration > 0 && !settings.IsCompressionMode && !settings.IsDecompressionMode)
+            {
+                AnsiConsole.WriteLine("Looking for the best compression level for given duration. Please wait...") ;
+                await AdviseLogger.CheckForBestLevel(
+                            settings.Duration,
+                            settings.Path
+                        );
             }
 
             _console.WriteLine("Task completed.");
