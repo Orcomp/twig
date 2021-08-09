@@ -57,6 +57,11 @@
 
             public override ValidationResult Validate()
             {
+                if (File.GetAttributes(Path).HasFlag(FileAttributes.Directory) && System.IO.Path.HasExtension(OutputPath))
+                {
+                    return ValidationResult.Error("Impossible to do. Input path is a folder and output path is a file.");
+                }
+
                 if (IsCompressionMode && IsDecompressionMode)
                 {
                     return ValidationResult.Error("Only one operation (compress or decompress) can be selected at the same time.");
@@ -64,7 +69,7 @@
 
                 if (!String.IsNullOrEmpty(OutputPath) && OutputPath.IndexOfAny(System.IO.Path.GetInvalidPathChars()) >= 0)
                 {
-                    return ValidationResult.Error("Destination folder contains invalid characters");
+                    return ValidationResult.Error("Destination folder contains invalid characters.");
                 }
 
                 if (IsCompressionMode && !File.GetAttributes(Path).HasFlag(FileAttributes.Directory) && Path.EndsWith(".zs"))
