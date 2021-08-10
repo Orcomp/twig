@@ -18,6 +18,11 @@
             [Description("Path to the files")]
             public string Path { get; set; }
 
+            [CommandArgument(1, "[duration]")]
+            [Description("Compression duration")]
+            [DefaultValue(100)]
+            public int Duration { get; set; }
+
             [CommandOption("-c|--compress")]
             [Description("Compress files")]
             public bool IsCompressionMode { get; set; }
@@ -52,8 +57,10 @@
             public bool Verbose { get; set; }
 
             [CommandOption("--advise")]
-            [Description("Find the best compression level given a file and duration")]
-            public int Duration { get; set; }
+            [Description("Find the best compression level given a file and duration\nExample: twig filepath 2000 --advise\nDuration is in milliseconds.")]
+            public bool Advise { get; set; }
+
+
 
             public override ValidationResult Validate()
             {
@@ -87,12 +94,12 @@
                     return ValidationResult.Error("Invalid compression level (must be between 1 and 22).");
                 }
 
-                if (Duration > 0 && Path.EndsWith(".zs"))
+                if (Advise && Path.EndsWith(".zs"))
                 {
                     return ValidationResult.Error("Advise mode requires an uncompressed file.");
                 }
 
-                if (Duration > 0 && IsCompressionMode)
+                if (Advise && IsCompressionMode)
                 {
 
                     return ValidationResult.Error("Cannot process advise and compress commands at the same time.");
@@ -153,7 +160,7 @@
                     );
             }
 
-            if (!settings.IsCompressionMode && !settings.IsDecompressionMode && settings.Duration == 0)
+            if (!settings.IsCompressionMode && !settings.IsDecompressionMode && Convert.ToInt32(settings.Duration) == 0)
             {
                 await AnsiConsole.Progress()
                     .StartExecuteAsync("Processing...", async (task) => await Archiver.RunArchiver(
@@ -169,7 +176,7 @@
                     );
             }
 
-            if (settings.Duration > 0 && !settings.IsCompressionMode && !settings.IsDecompressionMode)
+            if (settings.Advise && !settings.IsCompressionMode && !settings.IsDecompressionMode)
             {
                 AnsiConsole.WriteLine("Looking for the best compression level for given duration. Please wait...") ;
                 await AdviseLogger.CheckForBestLevel(
