@@ -11,7 +11,9 @@
         public static async Task CheckForBestLevel(int duration, string path)
         {
             var bestLevel = 1;
-            var tempPath = Path.Combine(Path.GetDirectoryName(path), "temp");
+            var appdataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
+            var tempDirectory = "WildGums\\twig\\temp";
+            var tempPath = Path.Combine(appdataPath, tempDirectory);
             try
             {
                 for (int level = 1; level < 22; level++)
@@ -22,6 +24,7 @@
                     if (watch.ElapsedMilliseconds <= duration)
                     {
                         AnsiConsole.MarkupLine($"[gray] Checking level {level} of 22. [/]");
+                        AnsiConsole.MarkupLine($"[gray] Finished checking level {level} in {watch.ElapsedMilliseconds} ms [/]");
                         bestLevel = level;
                     }
                     else
@@ -35,7 +38,7 @@
                 Directory.Delete(tempPath, true);
             }
 
-            AnsiConsole.MarkupLine($"[green] Advised compression level is {bestLevel}. [/]");
+            AnsiConsole.MarkupLine($"[green] The best compression level for {path} and duration {duration} is: {bestLevel}. [/]");
         }
     }
 }

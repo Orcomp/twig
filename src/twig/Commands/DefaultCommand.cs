@@ -52,8 +52,8 @@
             public bool Verbose { get; set; }
 
             [CommandOption("--advise")]
-            [Description("Find the best compression level given a file and duration")]
-            public int Duration { get; set; }
+            [Description("Find the best compression level given a file and duration\nExample: twig filepath --advise 2000\nDuration is in milliseconds.")]
+            public int AdviseDuration { get; set; }
 
             public override ValidationResult Validate()
             {
@@ -87,12 +87,12 @@
                     return ValidationResult.Error("Invalid compression level (must be between 1 and 22).");
                 }
 
-                if (Duration > 0 && Path.EndsWith(".zs"))
+                if (AdviseDuration > 0 && Path.EndsWith(".zs"))
                 {
                     return ValidationResult.Error("Advise mode requires an uncompressed file.");
                 }
 
-                if (Duration > 0 && IsCompressionMode)
+                if (AdviseDuration > 0 && IsCompressionMode)
                 {
 
                     return ValidationResult.Error("Cannot process advise and compress commands at the same time.");
@@ -153,7 +153,7 @@
                     );
             }
 
-            if (!settings.IsCompressionMode && !settings.IsDecompressionMode && settings.Duration == 0)
+            if (settings.AdviseDuration == 0 && !settings.IsCompressionMode && !settings.IsDecompressionMode)
             {
                 await AnsiConsole.Progress()
                     .StartExecuteAsync("Processing...", async (task) => await Archiver.RunArchiver(
@@ -169,11 +169,11 @@
                     );
             }
 
-            if (settings.Duration > 0 && !settings.IsCompressionMode && !settings.IsDecompressionMode)
+            if (settings.AdviseDuration > 0 && !settings.IsCompressionMode && !settings.IsDecompressionMode)
             {
                 AnsiConsole.WriteLine("Looking for the best compression level for given duration. Please wait...") ;
                 await AdviseLogger.CheckForBestLevel(
-                            settings.Duration,
+                            settings.AdviseDuration,
                             settings.Path
                         );
             }
