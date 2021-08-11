@@ -6,12 +6,15 @@
 
     public static class ProgressExtensions
     {
-        public static async Task StartExecuteAsync(this Progress consoleProgress, string description, Func<ProgressTask, Task> func)
+        public static async Task StartExecuteAsync(this Progress consoleProgress, string description, Func<ProgressTask, Task> funcAsync)
         {
             await consoleProgress.StartAsync(async ctx =>
             {
                 var task = ctx.AddTask($"[green] {description} [/]");
-                await func(task);
+                using (Archiver.ReportProgress(task))
+                {
+                    await funcAsync(task);
+                }
             });
         }
     }

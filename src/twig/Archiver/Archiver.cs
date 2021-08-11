@@ -1,5 +1,6 @@
 ﻿namespace twig
 {
+    using System;
     using System.IO;
     using System.Linq;
     using System.Threading.Tasks;
@@ -8,7 +9,16 @@
 
     public static class Archiver
     {
-        public static async Task CompressAsync(string path, int compressionLevel, bool overwrite, bool subfolder, bool verbose, string output, bool remove, ProgressTask task, long size = 0)
+        public static event EventHandler<ProgressChangedEventArgs> ProgressChanged;
+        public static event EventHandler<ProgressStartEventArgs> ProgressStart;
+        public static event EventHandler<ProgressFinishEventArgs> ProgressFinish;
+
+        public static IDisposable ReportProgress(ProgressTask task)
+        {
+            return new ProgressBarDisposable(task);
+        }
+
+        public static async Task CompressAsync(string path, int compressionLevel, bool overwrite, bool subfolder, bool verbose, string output, bool remove, bool automaticMode = false, long size = 0)
         {
             using var options = new CompressionOptions(compressionLevel);
             using var compressor = new Compressor(options);
@@ -19,14 +29,15 @@
                 if (size == 0)
                 {
                     size = FileHelper.GetDirectorySize(path, subfolder);
+                    ProgressStart?.Invoke(null, new ProgressStartEventArgs(size));
                 }
-                task.MaxValue = size;
+
                 var filePaths = Directory.GetFiles(path);
 
                 foreach (var filePath in filePaths.Where(filePaths => !filePaths.EndsWith(".zs")))
                 {
                     await WriteCompressedDataAsync(filePath, compressor, overwrite, verbose, output);
-                    task.Value += new FileInfo(filePath).Length;
+                    ProgressChanged?.Invoke(null, new ProgressChangedEventArgs(new FileInfo(filePath).Length));
                     RemoveOriginal(filePath, remove);
                 }
                 if (subfolder)
@@ -38,18 +49,30 @@
                         foreach (var file in files.Where(files => !files.EndsWith(".zs")))
                         {
                             await WriteCompressedDataAsync(file, compressor, overwrite, verbose, output);
-                            task.Value += new FileInfo(file).Length;
+                            ProgressChanged?.Invoke(null, new ProgressChangedEventArgs(new FileInfo(file).Length));
                             RemoveOriginal(file, remove);
                         }
                     }
                 }
 
+                if (!automaticMode)
+                {
+                    ProgressFinish?.Invoke(null, new ProgressFinishEventArgs());
+                }
+
                 return;
             }
 
-            task.MaxValue = new FileInfo(path).Length;
+            if (!automaticMode)
+            {
+                ProgressStart?.Invoke(null, new ProgressStartEventArgs(new FileInfo(path).Length));
+            }
             await WriteCompressedDataAsync(path, compressor, overwrite, verbose, output);
-            task.Value += new FileInfo(path).Length;
+            ProgressChanged?.Invoke(null, new ProgressChangedEventArgs(new FileInfo(path).Length));
+            if (!automaticMode)
+            {
+                ProgressFinish?.Invoke(null, new ProgressFinishEventArgs());
+            }
             RemoveOriginal(path, remove);
         }
 
@@ -71,7 +94,7 @@
             }
         }
 
-        public static async Task DecompressAsync(string path, bool overwrite, bool subfolder, string output, bool remove, ProgressTask task, long size = 0)
+        public static async Task DecompressAsync(string path, bool overwrite, bool subfolder, string output, bool remove, bool automaticMode = false, long size = 0)
         {
             using var decompressor = new Decompressor();
             FileAttributes attr = File.GetAttributes(path);
@@ -80,13 +103,14 @@
                 string[] filePaths = Directory.GetFiles(path);
                 if (size == 0)
                 {
-                  size = FileHelper.GetDirectorySize(path, subfolder, ".zs");
+                    size = FileHelper.GetDirectorySize(path, subfolder, ".zs");
+                    ProgressStart?.Invoke(null, new ProgressStartEventArgs(size));
                 }
-                task.MaxValue = size;
+
                 foreach (var filePath in filePaths.Where(filePaths => filePaths.EndsWith(".zs")))
                 {
                     await WriteDecompressedDataAsync(filePath, decompressor, overwrite, output);
-                    task.Value += new FileInfo(filePath).Length;
+                    ProgressChanged?.Invoke(null, new ProgressChangedEventArgs(new FileInfo(filePath).Length));
                     RemoveOriginal(filePath, remove);
                 }
                 if (subfolder)
@@ -98,18 +122,30 @@
                         foreach (var file in files.Where(files => files.EndsWith(".zs")))
                         {
                             await WriteDecompressedDataAsync(file, decompressor, overwrite, output);
-                            task.Value += new FileInfo(file).Length;
+                            ProgressChanged?.Invoke(null, new ProgressChangedEventArgs(new FileInfo(file).Length));
                             RemoveOriginal(file, remove);
                         }
                     }
                 }
 
+                if (!automaticMode)
+                {
+                    ProgressFinish?.Invoke(null, new ProgressFinishEventArgs());
+                }
+
                 return;
             }
 
-            task.MaxValue = new FileInfo(path).Length;
+            if (!automaticMode)
+            {
+                ProgressStart?.Invoke(null, new ProgressStartEventArgs(new FileInfo(path).Length));
+            }
             await WriteDecompressedDataAsync(path, decompressor, overwrite, output);
-            task.Value += new FileInfo(path).Length;
+            ProgressChanged?.Invoke(null, new ProgressChangedEventArgs(new FileInfo(path).Length));
+            if (!automaticMode)
+            {
+                ProgressFinish?.Invoke(null, new ProgressFinishEventArgs());
+            }
             RemoveOriginal(path, remove);
         }
         private static async Task WriteDecompressedDataAsync(string path, Decompressor decompressor, bool overwrite, string output)
@@ -138,17 +174,18 @@
         {
             if (!File.GetAttributes(path).HasFlag(FileAttributes.Directory) && path.EndsWith(".zs"))
             {
-                await DecompressAsync(path, overwrite, subfolder, output, remove, task);
+                await DecompressAsync(path, overwrite, subfolder, output, remove);
                 return;
             }
             if (!File.GetAttributes(path).HasFlag(FileAttributes.Directory) && !path.EndsWith(".zs"))
             {
-                await CompressAsync(path, compressionLevel, overwrite, subfolder, verbose, output, remove, task);
+                await CompressAsync(path, compressionLevel, overwrite, subfolder, verbose, output, remove);
                 return;
             }
 
             var size = FileHelper.GetTotalSize(path, subfolder);
-            
+            ProgressStart?.Invoke(null, new ProgressStartEventArgs(size));
+
             if (File.GetAttributes(path).HasFlag(FileAttributes.Directory))
             {
                 var paths = Directory.GetFiles(path);
@@ -160,14 +197,15 @@
                 {
                     if (p.EndsWith(".zs"))
                     {
-                        await DecompressAsync(p, overwrite, subfolder, output, remove, task, size);
+                        await DecompressAsync(p, overwrite, subfolder, output, remove, true);
                     }
 
                     if (!p.EndsWith(".zs"))
                     {
-                        await CompressAsync(p, compressionLevel, overwrite, subfolder, verbose, output, remove, task, size);
+                        await CompressAsync(p, compressionLevel, overwrite, subfolder, verbose, output, remove, true);
                     }
                 }
+                ProgressFinish?.Invoke(null, new ProgressFinishEventArgs());
             }
         }
 
