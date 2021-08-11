@@ -83,7 +83,7 @@
             var compressedBytes = compressor.Wrap(data);
             if (File.Exists($"{path}.zs") && !overwrite)
             {
-                AnsiConsole.WriteLine($"A compressed file with the same name {Path.GetFileNameWithoutExtension(path)} already exists. Use the -o | --overwrite parameter to force overwrite.");
+                AnsiConsole.WriteLine($"A compressed file with the same name {Path.GetFileNameWithoutExtension(path)} already exists. Use the -f | --force parameter to force overwrite.");
                 return;
             }
             var writer = await FileHelper.WriteFileAsync(compressedBytes, path, output, ".zs");
@@ -154,7 +154,7 @@
             var decompressedBytes = decompressor.Unwrap(compressedData);
             var unpackingPath = Path.ChangeExtension(path, "");
 
-            if (File.Exists($"{path}") && !overwrite)
+            if (File.Exists($"{unpackingPath}") && !overwrite)
             {
                 AnsiConsole.WriteLine($"A decompressed file with the same name {Path.GetFileNameWithoutExtension(path)} already exists. Use the -o | --overwrite parameter to force overwrite.");
                 return;

@@ -55,6 +55,14 @@
             [Description("Find the best compression level given a file and duration\nExample: twig filepath --advise 2000\nDuration is in milliseconds.")]
             public int AdviseDuration { get; set; }
 
+            [CommandOption("--register")]
+            [Description("Register twig into the Windows Path.")]
+            public bool Register { get; set; }
+
+            [CommandOption("--unregister")]
+            [Description("Unregister twig from the Windows Path.")]
+            public bool Unregister { get; set; }
+
             public override ValidationResult Validate()
             {
                 if (File.GetAttributes(Path).HasFlag(FileAttributes.Directory) && System.IO.Path.HasExtension(OutputPath))
