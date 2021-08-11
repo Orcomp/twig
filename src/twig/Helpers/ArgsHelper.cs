@@ -8,22 +8,20 @@
         public static string[] HandleArgs(string[] args, int defaultVal)
         {
             var argsList = args.ToList();
-            if (argsList.Contains("--advise"))
+            if (!argsList.Contains("--advise"))
             {
-                var adviseIdx = argsList.IndexOf("--advise");
+                return args;
+            }
 
-                if (argsList.Count > adviseIdx + 1)
-                {
-                    if (Int32.TryParse(argsList[adviseIdx + 1], out var val))
-                    {
-                        return argsList.ToArray();
-                    }
-                }
+            var adviseIdx = argsList.IndexOf("--advise");
 
-                argsList.Insert(adviseIdx + 1, defaultVal.ToString());
+            if (argsList.Count > adviseIdx + 1 && Int32.TryParse(argsList[adviseIdx + 1], out var val))
+            {
                 return argsList.ToArray();
             }
-            return args;
+
+            argsList.Insert(adviseIdx + 1, defaultVal.ToString());
+            return argsList.ToArray();
         }
     }
 }
