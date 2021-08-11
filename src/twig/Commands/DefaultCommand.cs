@@ -153,7 +153,7 @@
                     );
             }
 
-            if (!settings.IsCompressionMode && !settings.IsDecompressionMode)
+            if (settings.AdviseDuration == 0 && !settings.IsCompressionMode && !settings.IsDecompressionMode)
             {
                 await AnsiConsole.Progress()
                     .StartExecuteAsync("Processing...", async (task) => await Archiver.RunArchiver(
