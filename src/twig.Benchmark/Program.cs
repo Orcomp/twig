@@ -1,10 +1,6 @@
 ﻿namespace twig.Benchmark
 {
-    using System;
-    using System.IO;
     using BenchmarkDotNet.Running;
-    using Path = Catel.IO.Path;
-
     public class Program
     {
         public static void Main(string[] args)

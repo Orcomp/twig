@@ -21,13 +21,13 @@
         [Benchmark]
         public async Task Compress()
         {
-            await Archiver.CompressAsync(_toCompressPath, Level, true, false, false, Path.Combine(_toCompressPath + Level), false, false);
+            await Archiver.CompressAsync(_toCompressPath, Level, true, false, false, false, Path.Combine(_toCompressPath + Level), false, false);
         }
 
         [Benchmark]
         public async Task Decompress()
         {
-            await Archiver.DecompressAsync(Path.Combine(_toCompressPath + Level), true, false, "", false, false);
+            await Archiver.DecompressAsync(Path.Combine(_toCompressPath + Level), true, false, false, "", false, false);
         }
     }
 }

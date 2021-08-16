@@ -18,7 +18,7 @@
             return new ProgressBarDisposable(task);
         }
 
-        public static async Task CompressAsync(string path, int compressionLevel, bool overwrite, bool subfolder, bool verbose, string output, bool remove, bool automaticMode = false, long size = 0)
+        public static async Task CompressAsync(string path, int compressionLevel, bool overwrite, bool subfolder, bool replicate, bool verbose, string output, bool remove, bool automaticMode = false, long size = 0)
         {
             using var options = new CompressionOptions(compressionLevel);
             using var compressor = new Compressor(options);
@@ -43,12 +43,14 @@
                 if (subfolder)
                 {
                     var subfolders = new DirectoryInfo(path).GetDirectories();
+
                     foreach (var folder in subfolders)
                     {
                         var files = Directory.GetFiles(folder.ToString());
+                        var outputPath = replicate ? Path.Combine(output, folder.Name) : output;
                         foreach (var file in files.Where(files => !files.EndsWith(".zs")))
                         {
-                            await WriteCompressedDataAsync(file, compressor, overwrite, verbose, output);
+                            await WriteCompressedDataAsync(file, compressor, overwrite, verbose, outputPath);
                             ProgressChanged?.Invoke(null, new ProgressChangedEventArgs(new FileInfo(file).Length));
                             RemoveOriginal(file, remove);
                         }
@@ -94,7 +96,7 @@
             }
         }
 
-        public static async Task DecompressAsync(string path, bool overwrite, bool subfolder, string output, bool remove, bool automaticMode = false, long size = 0)
+        public static async Task DecompressAsync(string path, bool overwrite, bool subfolder, bool replicate, string output, bool remove, bool automaticMode = false, long size = 0)
         {
             using var decompressor = new Decompressor();
             FileAttributes attr = File.GetAttributes(path);
@@ -119,9 +121,10 @@
                     foreach (var folder in subfolders)
                     {
                         var files = Directory.GetFiles(folder.ToString());
+                        var outputPath = replicate ? Path.Combine(output, folder.Name) : output;
                         foreach (var file in files.Where(files => files.EndsWith(".zs")))
                         {
-                            await WriteDecompressedDataAsync(file, decompressor, overwrite, output);
+                            await WriteDecompressedDataAsync(file, decompressor, overwrite, outputPath);
                             ProgressChanged?.Invoke(null, new ProgressChangedEventArgs(new FileInfo(file).Length));
                             RemoveOriginal(file, remove);
                         }
@@ -170,16 +173,16 @@
             }
         }
 
-        public static async Task RunArchiver(string path, int compressionLevel, bool overwrite, bool subfolder, bool verbose, string output, bool remove, ProgressTask task)
+        public static async Task RunArchiver(string path, int compressionLevel, bool overwrite, bool subfolder, bool replicate, bool verbose, string output, bool remove, ProgressTask task)
         {
             if (!File.GetAttributes(path).HasFlag(FileAttributes.Directory) && path.EndsWith(".zs"))
             {
-                await DecompressAsync(path, overwrite, subfolder, output, remove);
+                await DecompressAsync(path, overwrite, subfolder, replicate, output, remove);
                 return;
             }
             if (!File.GetAttributes(path).HasFlag(FileAttributes.Directory) && !path.EndsWith(".zs"))
             {
-                await CompressAsync(path, compressionLevel, overwrite, subfolder, verbose, output, remove);
+                await CompressAsync(path, compressionLevel, overwrite, subfolder, replicate, verbose, output, remove);
                 return;
             }
 
@@ -195,14 +198,17 @@
                 }
                 foreach (var p in paths)
                 {
+                    var dir = Path.GetDirectoryName(p) == path ? "" : Path.GetFileName(Path.GetDirectoryName(p));
+                    var outputPath = replicate ? Path.Combine(output, dir) : output;
+
                     if (p.EndsWith(".zs"))
                     {
-                        await DecompressAsync(p, overwrite, subfolder, output, remove, true);
+                        await DecompressAsync(p, overwrite, subfolder, replicate, outputPath, remove, true);
                     }
 
                     if (!p.EndsWith(".zs"))
                     {
-                        await CompressAsync(p, compressionLevel, overwrite, subfolder, verbose, output, remove, true);
+                        await CompressAsync(p, compressionLevel, overwrite, subfolder, replicate, verbose, outputPath, remove, true);
                     }
                 }
                 ProgressFinish?.Invoke(null, new ProgressFinishEventArgs());
