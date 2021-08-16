@@ -15,7 +15,7 @@
             var key = Registry.CurrentUser.CreateSubKey(subKey, true);
             key.SetValue("", value);
             var newSubKey = key.CreateSubKey("command");
-            newSubKey.SetValue("", appPath + " %1");
+            newSubKey.SetValue("", appPath + " \"%1\"");
             newSubKey.Close();
             key.Close();
 
@@ -27,7 +27,7 @@
             var appPath = System.Diagnostics.Process.GetCurrentProcess().MainModule.FileName;
             var key = Registry.CurrentUser.CreateSubKey("Software\\Classes\\" + extension);
             var subKey = key.CreateSubKey("shell\\open\\command");
-            subKey.SetValue("", appPath + " %1");
+            subKey.SetValue("", appPath + " \"%1\"");
             subKey.Close();
             key.Close();
 
@@ -36,10 +36,7 @@
 
         public static void RemoveContextMenuOption(string subKey)
         {
-            var key = Registry.CurrentUser.OpenSubKey(subKey, true);
-            key.DeleteValue("");
-            key.DeleteSubKey("command");
-            key.Close();
+            Microsoft.Win32.Registry.CurrentUser.DeleteSubKeyTree(subKey);
 
             SHChangeNotify(0x08000000, 0x0000, IntPtr.Zero, IntPtr.Zero);
         }

@@ -13,13 +13,13 @@
 
         public static string FileName = "testData.txt";
 
-        private static Random random = new Random();
+        private static readonly Random Random = new Random();
 
         public static void CreateRandomTextFile(int sizeKb)
         {
             const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789_+=<>?/,.#$%^&*()";
             var str = new string(Enumerable.Repeat(chars, sizeKb * 1024)
-                .Select(s => s[random.Next(s.Length)]).ToArray());
+                .Select(s => s[Random.Next(s.Length)]).ToArray());
             var bytes = Encoding.ASCII.GetBytes(str);
             var directory = Path.Combine(AppDataPath, TempDirectory);
             Directory.CreateDirectory(directory);

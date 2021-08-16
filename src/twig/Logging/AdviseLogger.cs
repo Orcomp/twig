@@ -19,7 +19,7 @@
                 for (int level = 1; level < 22; level++)
                 {
                     var watch = Stopwatch.StartNew();
-                    await Archiver.CompressAsync(path, level, true, false, false, tempPath, false);
+                    await Archiver.CompressAsync(path, level, true, false, false, false, tempPath, false);
                     watch.Stop();
                     if (watch.ElapsedMilliseconds <= duration)
                     {
