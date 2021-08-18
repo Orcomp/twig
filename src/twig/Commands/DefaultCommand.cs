@@ -39,6 +39,10 @@
             [Description("Recursively look into subfolders")]
             public bool Subfolder { get; set; }
 
+            [CommandOption("--output-dir-mirror")]
+            [Description("Replicate input directory hierarchy into output directory.")]
+            public bool Replicate { get; set; }
+
             [CommandOption("-o|--output")]
             [Description("Write to specified path")]
             public string OutputPath { get; set; }
@@ -141,6 +145,7 @@
                             settings.CompressionLevel,
                             settings.Overwrite,
                             settings.Subfolder,
+                            settings.Replicate,
                             settings.Verbose,
                             settings.OutputPath,
                             settings.Remove
@@ -155,6 +160,7 @@
                             settings.Path,
                             settings.Overwrite,
                             settings.Subfolder,
+                            settings.Replicate,
                             settings.OutputPath,
                             settings.Remove
                         )
@@ -169,6 +175,7 @@
                             settings.CompressionLevel,
                             settings.Overwrite,
                             settings.Subfolder,
+                            settings.Replicate,
                             settings.Verbose,
                             settings.OutputPath,
                             settings.Remove,

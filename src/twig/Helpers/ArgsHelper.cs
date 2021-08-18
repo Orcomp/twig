@@ -2,6 +2,7 @@
 {
     using System;
     using System.Linq;
+    using Spectre.Console;
 
     public static class ArgsHelper
     {
@@ -9,12 +10,18 @@
         {
             var argsList = args.ToList();
 
+            if((argsList.Contains("--register") && argsList.Contains("--unregister")))
+            {
+                AnsiConsole.MarkupLine("[red]Cannot process register and unregister commands at the same time.[/]");
+                Environment.Exit(0);
+            }
+
             if (argsList.Contains("--register"))
             {
                 FileAssociationHelper.RegisterForFileExtension(".zs");
                 FileAssociationHelper.AddContextMenuOption("SOFTWARE\\Classes\\*\\shell\\twig", "Process with twig");
                 FileAssociationHelper.AddContextMenuOption("SOFTWARE\\Classes\\Directory\\shell\\twig", "Process folder with twig");
-                Console.WriteLine("Application has been registered.");
+                AnsiConsole.MarkupLine("[green]Application has been registered. [/]");
             }
 
             if (argsList.Contains("--unregister"))
@@ -22,7 +29,12 @@
                 FileAssociationHelper.UnregisterForFileExtension(".zs");
                 FileAssociationHelper.RemoveContextMenuOption("SOFTWARE\\Classes\\*\\shell\\twig");
                 FileAssociationHelper.RemoveContextMenuOption("SOFTWARE\\Classes\\Directory\\shell\\twig");
-                Console.WriteLine("Application has been unregistered.");
+                AnsiConsole.MarkupLine("[green]Application has been unregistered. [/]");
+            }
+
+            if (argsList.Count == 1 && (argsList.Contains("--unregister") || argsList.Contains("--register")))
+            {
+                Environment.Exit(0);
             }
 
             if (!argsList.Contains("--advise"))
