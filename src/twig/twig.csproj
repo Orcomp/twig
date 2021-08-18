@@ -18,7 +18,7 @@
   <PropertyGroup>
     <!-- SonarQube requires a project guid -->
     <ProjectGuid>FD86BFB0-057F-4E66-A55C-C070724FD9D7</ProjectGuid>
-    <ApplicationIcon>tw.ico</ApplicationIcon>
+    <ApplicationIcon>Resources\Icons\tw.ico</ApplicationIcon>
     <OutputType>Exe</OutputType>
     <StartupObject />
   </PropertyGroup>
