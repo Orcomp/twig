@@ -55,16 +55,20 @@
             [Description("Print information after compressing each file")]
             public bool Verbose { get; set; }
 
+            [CommandOption("--rtf")]
+            [Description("Remove RTF encodings from a csv file")]
+            public bool StripRtf { get; set; }
+
             [CommandOption("--advise")]
-            [Description("Find the best compression level given a file and duration\nExample: twig filepath --advise 2000\nDuration is in milliseconds.")]
+            [Description("Find the best compression level given a file and duration\nExample: twig filepath --advise 2000\nDuration is in milliseconds")]
             public int AdviseDuration { get; set; }
 
             [CommandOption("--register")]
-            [Description("Register twig into the Windows Path.")]
+            [Description("Register twig into the Windows Path")]
             public bool Register { get; set; }
 
             [CommandOption("--unregister")]
-            [Description("Unregister twig from the Windows Path.")]
+            [Description("Unregister twig from the Windows Path")]
             public bool Unregister { get; set; }
 
             public override ValidationResult Validate()
@@ -106,8 +110,12 @@
 
                 if (AdviseDuration > 0 && IsCompressionMode)
                 {
-
                     return ValidationResult.Error("Cannot process advise and compress commands at the same time.");
+                }
+
+                if (StripRtf && !Path.EndsWith(".csv"))
+                {
+                    return ValidationResult.Error("File must be a csv.");
                 }
 
                 //if (IsDecompressionMode && Directory.GetFiles(Path, "*.zs", SearchOption.AllDirectories).Length == 0)
@@ -148,7 +156,8 @@
                             settings.Replicate,
                             settings.Verbose,
                             settings.OutputPath,
-                            settings.Remove
+                            settings.Remove,
+                            stripRtf: settings.StripRtf
                         )
                     );
             }
@@ -179,6 +188,7 @@
                             settings.Verbose,
                             settings.OutputPath,
                             settings.Remove,
+                            settings.StripRtf,
                             task
                         )
                     );
