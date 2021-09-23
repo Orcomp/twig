@@ -140,57 +140,28 @@
             if (settings.IsCompressionMode)
             {
                 await AnsiConsole.Progress()
-                    .StartExecuteAsync("Compressing...", async (task) => await Archiver.CompressAsync(
-                            settings.Path,
-                            settings.CompressionLevel,
-                            settings.Overwrite,
-                            settings.Subfolder,
-                            settings.Replicate,
-                            settings.Verbose,
-                            settings.OutputPath,
-                            settings.Remove
-                        )
+                    .StartExecuteAsync("Compressing...", async (task) => await Archiver.CompressAsync(settings)
                     );
             }
 
             if (settings.IsDecompressionMode)
             {
                 await AnsiConsole.Progress()
-                    .StartExecuteAsync("Decompressing...", async (task) => await Archiver.DecompressAsync(
-                            settings.Path,
-                            settings.Overwrite,
-                            settings.Subfolder,
-                            settings.Replicate,
-                            settings.OutputPath,
-                            settings.Remove
-                        )
+                    .StartExecuteAsync("Decompressing...", async (task) => await Archiver.DecompressAsync(settings)
                     );
             }
 
             if (settings.AdviseDuration == 0 && !settings.IsCompressionMode && !settings.IsDecompressionMode)
             {
                 await AnsiConsole.Progress()
-                    .StartExecuteAsync("Processing...", async (task) => await Archiver.RunArchiver(
-                            settings.Path,
-                            settings.CompressionLevel,
-                            settings.Overwrite,
-                            settings.Subfolder,
-                            settings.Replicate,
-                            settings.Verbose,
-                            settings.OutputPath,
-                            settings.Remove,
-                            task
-                        )
+                    .StartExecuteAsync("Processing...", async (task) => await Archiver.RunArchiver(settings, task)
                     );
             }
 
             if (settings.AdviseDuration > 0 && !settings.IsCompressionMode && !settings.IsDecompressionMode)
             {
                 AnsiConsole.WriteLine("Looking for the best compression level for given duration. Please wait...") ;
-                await AdviseLogger.CheckForBestLevel(
-                            settings.AdviseDuration,
-                            settings.Path
-                        );
+                await AdviseLogger.CheckForBestLevel(settings);
             }
 
             _console.WriteLine("Task completed.");
