@@ -28,7 +28,7 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "twig", "twig\twig.csproj", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Benchmark", "Benchmark", "{F31E0279-AD0D-4F66-8CA5-BFBF802CAAAB}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "twig.Benchmark", "twig.Benchmark\twig.Benchmark.csproj", "{2157DB4A-9343-4EA2-BD8C-DB9B885E7B8B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "twig.Benchmark", "twig.Benchmark\twig.Benchmark.csproj", "{2157DB4A-9343-4EA2-BD8C-DB9B885E7B8B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
