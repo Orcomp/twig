@@ -18,9 +18,13 @@
   <PropertyGroup>
     <!-- SonarQube requires a project guid -->
     <ProjectGuid>FD86BFB0-057F-4E66-A55C-C070724FD9D7</ProjectGuid>
-    <ApplicationIcon />
+    <ApplicationIcon>Resources\Icons\tw.ico</ApplicationIcon>
     <OutputType>Exe</OutputType>
     <StartupObject />
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
 
   <ItemGroup>
@@ -46,4 +50,16 @@
   </ItemGroup>
 
   <Import Project="$(MSBuildProjectDirectory)\..\Directory.build.shared.explicit.props" Condition="Exists('$(MSBuildProjectDirectory)\..\Directory.build.shared.explicit.props')" />
+
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\Icons\compressed.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Icons\compressed_zs.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Resources\Icons\tw.ico">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </EmbeddedResource>
+  </ItemGroup>
 </Project>

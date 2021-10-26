@@ -8,18 +8,22 @@
 
     public static class AdviseLogger
     {
-        public static async Task CheckForBestLevel(int duration, string path)
+        public static async Task CheckForBestLevel(DefaultCommand.Settings settings)
         {
             var bestLevel = 1;
             var appdataPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData);
             var tempDirectory = "WildGums\\twig\\temp";
-            var tempPath = Path.Combine(appdataPath, tempDirectory);
+            settings.OutputPath = Path.Combine(appdataPath, tempDirectory);
+            settings.Overwrite = true;
+            var path = settings.Path;
+            var duration = settings.AdviseDuration;
             try
             {
                 for (int level = 1; level < 22; level++)
                 {
+                    settings.CompressionLevel = level;
                     var watch = Stopwatch.StartNew();
-                    await Archiver.CompressAsync(path, level, true, false, false, false, tempPath, false);
+                    await Archiver.CompressAsync(settings);
                     watch.Stop();
                     if (watch.ElapsedMilliseconds <= duration)
                     {
@@ -35,7 +39,7 @@
             }
             finally
             {
-                Directory.Delete(tempPath, true);
+                Directory.Delete(settings.OutputPath, true);
             }
 
             AnsiConsole.MarkupLine($"[green] The best compression level for {path} and duration {duration} is: {bestLevel}. [/]");
